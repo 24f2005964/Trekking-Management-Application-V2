@@ -45,22 +45,22 @@
 
           <div class="mb-3">
             <label class="form-label small fw-semibold text-muted">Full Name</label>
-            <input type="text" class="form-control" v-model="name" placeholder="John Doe" required />
+            <input type="text" class="form-control" v-model="name" placeholder="Enter your full name" required />
           </div>
 
           <div class="mb-3">
             <label class="form-label small fw-semibold text-muted">Email Address</label>
-            <input type="email" class="form-control" v-model="email" placeholder="john@example.com" required />
+            <input type="email" class="form-control" v-model="email" placeholder="Enter your email address" required />
           </div>
 
           <div class="mb-3">
             <label class="form-label small fw-semibold text-muted">Phone Number</label>
-            <input type="tel" class="form-control" v-model="phone" placeholder="9876543210" />
+            <input type="tel" class="form-control" v-model="phone" placeholder="10-digit mobile number" />
           </div>
 
           <div class="mb-3">
             <label class="form-label small fw-semibold text-muted">Password</label>
-            <input type="password" class="form-control" v-model="password" placeholder="At least 6 characters" required />
+            <input type="password" class="form-control" v-model="password" placeholder="Create a password (min. 6 characters)" required />
           </div>
 
           <div v-if="role === 'staff'" class="alert alert-info py-2 small">
