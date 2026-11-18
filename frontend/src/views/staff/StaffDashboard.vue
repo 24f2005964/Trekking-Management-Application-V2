@@ -203,14 +203,6 @@
                     </div>
                   </label>
 
-                  <label class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3" :class="{ 'bg-primary-subtle border-primary': newStatusValue === 'Started' }" style="cursor: pointer;">
-                    <input class="form-check-input flex-shrink-0 mt-0" type="radio" name="trekStatusRadio" value="Started" v-model="newStatusValue" />
-                    <div>
-                      <div class="fw-bold text-primary"><i class="bi bi-flag-fill me-1"></i>Started</div>
-                      <small class="text-muted">Expedition has begun; trekkers are currently on trail.</small>
-                    </div>
-                  </label>
-
                   <label class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3" :class="{ 'bg-info-subtle border-info': newStatusValue === 'Completed' }" style="cursor: pointer;">
                     <input class="form-check-input flex-shrink-0 mt-0" type="radio" name="trekStatusRadio" value="Completed" v-model="newStatusValue" />
                     <div>

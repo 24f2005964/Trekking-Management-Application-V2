@@ -253,7 +253,18 @@ def update_trek(trek_id):
     if 'duration_days' in data:
         trek.duration_days = int(data['duration_days'])
     if 'status' in data:
-        trek.status = data['status']
+        new_status = data['status']
+        if new_status in ['Open', 'Closed', 'Completed']:
+            trek.status = new_status
+            if new_status == 'Closed':
+                trek.available_slots = 0
+            elif new_status == 'Completed':
+                trek.available_slots = 0
+                Booking.query.filter_by(trek_id=trek.id, status='Confirmed').update({'status': 'Completed'})
+            elif new_status == 'Open':
+                active_booked = db.session.query(db.func.sum(Booking.seats_booked))\
+                    .filter(Booking.trek_id == trek.id, Booking.status == 'Confirmed').scalar() or 0
+                trek.available_slots = max(0, trek.total_slots - int(active_booked))
     if 'assigned_staff_id' in data:
         trek.assigned_staff_id = int(data['assigned_staff_id']) if data['assigned_staff_id'] else None
 

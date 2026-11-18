@@ -104,11 +104,11 @@ def update_trek_status(trek_id):
 
     data = request.get_json() or {}
     status = data.get('status')
-    if status not in ['Open', 'Closed', 'Started', 'Completed']:
-        return jsonify({'error': 'Status must be Open, Closed, Started, or Completed.'}), 400
+    if status not in ['Open', 'Closed', 'Completed']:
+        return jsonify({'error': 'Status must be Open, Closed, or Completed.'}), 400
 
     trek.status = status
-    if status in ['Started', 'Closed']:
+    if status == 'Closed':
         trek.available_slots = 0
     elif status == 'Completed':
         trek.available_slots = 0
