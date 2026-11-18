@@ -15,6 +15,16 @@ else
     source .venv/bin/activate
 fi
 
+# Check if frontend build exists, build if missing and npm is available
+if [ ! -d "frontend/dist" ]; then
+    echo "Frontend build not found. Building frontend..."
+    if command -v npm >/dev/null 2>&1; then
+        (cd frontend && npm install && npm run build)
+    else
+        echo "Warning: npm not found. If UI is missing, run 'cd frontend && npm install && npm run build'."
+    fi
+fi
+
 # Ensure redis is running
 if ! redis-cli ping >/dev/null 2>&1; then
     echo "Starting Redis..."
