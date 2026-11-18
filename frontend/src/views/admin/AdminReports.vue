@@ -183,7 +183,7 @@
       <!-- Unified Trek Reminder Dispatcher & Schedule Controls -->
       <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white overflow-hidden">
         <!-- Header & Action Row -->
-        <div class="p-3 px-md-4 border-bottom bg-light-subtle d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div class="p-3 px-md-4 bg-light-subtle d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
           <div>
             <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
               <h5 class="fw-bold text-dark mb-0 d-flex align-items-center">

@@ -80,7 +80,7 @@
         </ul>
 
         <!-- RIGHT CONTROLS & USER PROFILE -->
-        <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 gap-lg-3 ms-auto pt-2 pt-lg-0 border-top border-secondary-subtle border-opacity-10 border-lg-0" v-if="auth.isAuthenticated">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 gap-lg-3 ms-auto pt-2 pt-lg-0 border-0" v-if="auth.isAuthenticated">
           <!-- Trekker Notification Bell -->
           <button
             v-if="auth.isTrekker"
@@ -322,7 +322,8 @@ watch(() => auth.isAuthenticated, (newVal) => {
 /* Topbar Container with Modern Frosted Glass Dark Slate Styling */
 .custom-navbar {
   background: linear-gradient(135deg, #0b132b 0%, #172554 50%, #0f172a 100%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border: none !important;
+  border-bottom: none !important;
   box-shadow: 0 4px 20px -2px rgba(11, 19, 43, 0.35);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
