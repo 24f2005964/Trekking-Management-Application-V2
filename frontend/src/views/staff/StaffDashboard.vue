@@ -92,17 +92,11 @@
                 <i class="bi bi-megaphone me-1"></i>Notify
               </button>
 
-              <div class="dropdown ms-auto">
-                <button class="btn btn-sm btn-outline-success rounded-pill dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                  Status
-                </button>
-                <ul class="dropdown-menu shadow-sm border-0">
-                  <li><a class="dropdown-item" href="#" @click.prevent="setStatus(t.id, 'Open')"><i class="bi bi-play-circle text-success me-2"></i>Mark Open</a></li>
-                  <li><a class="dropdown-item" href="#" @click.prevent="setStatus(t.id, 'Closed')"><i class="bi bi-pause-circle text-warning me-2"></i>Mark Closed</a></li>
-                  <li><a class="dropdown-item" href="#" @click.prevent="setStatus(t.id, 'Started')"><i class="bi bi-flag-fill text-primary me-2"></i>Mark Started</a></li>
-                  <li><a class="dropdown-item" href="#" @click.prevent="setStatus(t.id, 'Completed')"><i class="bi bi-check2-circle text-info me-2"></i>Mark Completed</a></li>
-                </ul>
-              </div>
+              <!-- Button triggering the Status Change Modal -->
+              <button class="btn btn-sm btn-success rounded-pill px-3 ms-auto d-flex align-items-center gap-1 shadow-sm" @click="openStatusModal(t)">
+                <i class="bi bi-arrow-repeat"></i>
+                <span>Status</span>
+              </button>
             </div>
           </div>
         </div>
@@ -160,6 +154,78 @@
               <button type="submit" class="btn btn-success rounded-pill px-4" :disabled="savingSlots">
                 <span v-if="savingSlots" class="spinner-border spinner-border-sm me-1"></span>
                 Save Slots
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================= -->
+    <!-- POP-UP MODAL WINDOW: UPDATE TREK STATUS -->
+    <!-- ============================================================= -->
+    <div class="modal fade" id="statusModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-header bg-light">
+            <h5 class="modal-title fw-bold text-dark">
+              <i class="bi bi-arrow-repeat text-success me-2"></i>Update Expedition Status
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <form @submit.prevent="saveStatus">
+            <div class="modal-body p-4" v-if="statusTrek">
+              <div class="mb-3">
+                <h6 class="fw-bold mb-1">{{ statusTrek.name }}</h6>
+                <p class="text-muted small mb-2"><i class="bi bi-geo-alt me-1"></i>{{ statusTrek.location }} ({{ statusTrek.duration_days }} days)</p>
+                <div class="d-flex align-items-center gap-2 small">
+                  <span class="text-muted">Current Status:</span>
+                  <StatusBadge :status="statusTrek.status" />
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label small fw-semibold text-dark">Select New Status</label>
+                <div class="list-group">
+                  <label class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3" :class="{ 'bg-success-subtle border-success': newStatusValue === 'Open' }" style="cursor: pointer;">
+                    <input class="form-check-input flex-shrink-0 mt-0" type="radio" name="trekStatusRadio" value="Open" v-model="newStatusValue" />
+                    <div>
+                      <div class="fw-bold text-success"><i class="bi bi-play-circle-fill me-1"></i>Open</div>
+                      <small class="text-muted">Expedition is open and actively accepting trekker reservations.</small>
+                    </div>
+                  </label>
+
+                  <label class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3" :class="{ 'bg-warning-subtle border-warning': newStatusValue === 'Closed' }" style="cursor: pointer;">
+                    <input class="form-check-input flex-shrink-0 mt-0" type="radio" name="trekStatusRadio" value="Closed" v-model="newStatusValue" />
+                    <div>
+                      <div class="fw-bold text-warning-emphasis"><i class="bi bi-pause-circle-fill me-1"></i>Closed</div>
+                      <small class="text-muted">Booking registrations are frozen / closed to new participants.</small>
+                    </div>
+                  </label>
+
+                  <label class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3" :class="{ 'bg-primary-subtle border-primary': newStatusValue === 'Started' }" style="cursor: pointer;">
+                    <input class="form-check-input flex-shrink-0 mt-0" type="radio" name="trekStatusRadio" value="Started" v-model="newStatusValue" />
+                    <div>
+                      <div class="fw-bold text-primary"><i class="bi bi-flag-fill me-1"></i>Started</div>
+                      <small class="text-muted">Expedition has begun; trekkers are currently on trail.</small>
+                    </div>
+                  </label>
+
+                  <label class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3" :class="{ 'bg-info-subtle border-info': newStatusValue === 'Completed' }" style="cursor: pointer;">
+                    <input class="form-check-input flex-shrink-0 mt-0" type="radio" name="trekStatusRadio" value="Completed" v-model="newStatusValue" />
+                    <div>
+                      <div class="fw-bold text-info-emphasis"><i class="bi bi-check2-circle me-1"></i>Completed</div>
+                      <small class="text-muted">Trek has successfully concluded and participant bookings are fulfilled.</small>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer bg-light">
+              <button type="button" class="btn btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-success rounded-pill px-4" :disabled="savingStatus">
+                <span v-if="savingStatus" class="spinner-border spinner-border-sm me-1"></span>
+                <i v-else class="bi bi-check-lg me-1"></i>Update Status
               </button>
             </div>
           </form>
@@ -289,6 +355,38 @@ const noticeForm = ref({
   scheduled_for: ''
 })
 let noticeModalInstance = null
+
+const statusTrek = ref(null)
+const newStatusValue = ref('Open')
+const savingStatus = ref(false)
+let statusModalInstance = null
+
+const openStatusModal = (trek) => {
+  statusTrek.value = trek
+  newStatusValue.value = trek.status
+  const modalEl = document.getElementById('statusModal')
+  if (modalEl) {
+    statusModalInstance = Modal.getOrCreateInstance(modalEl)
+    statusModalInstance.show()
+  }
+}
+
+const saveStatus = async () => {
+  if (!statusTrek.value) return
+  savingStatus.value = true
+  try {
+    await api.put(`/staff/treks/${statusTrek.value.id}/status`, {
+      status: newStatusValue.value
+    })
+    statusModalInstance?.hide()
+    showAlert(`Expedition status updated to "${newStatusValue.value}" successfully!`, 'success')
+    fetchStaffDashboard()
+  } catch (err) {
+    showAlert(err.response?.data?.error || 'Failed to update trek status.', 'danger')
+  } finally {
+    savingStatus.value = false
+  }
+}
 
 const showAlert = (msg, type = 'success') => {
   alertMsg.value = msg

@@ -114,6 +114,11 @@ def update_trek_status(trek_id):
         trek.available_slots = 0
         # Mark confirmed bookings as Completed
         Booking.query.filter_by(trek_id=trek.id, status='Confirmed').update({'status': 'Completed'})
+    elif status == 'Open':
+        # When reopening, accurately restore remaining capacity based on active bookings
+        active_booked = db.session.query(db.func.sum(Booking.seats_booked))\
+            .filter(Booking.trek_id == trek.id, Booking.status == 'Confirmed').scalar() or 0
+        trek.available_slots = max(0, trek.total_slots - int(active_booked))
 
     db.session.commit()
     invalidate_treks_cache()
