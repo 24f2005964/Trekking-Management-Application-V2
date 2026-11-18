@@ -26,8 +26,9 @@ def register():
     if User.query.filter_by(email=email).first():
         return jsonify({'error': 'An account with this email already exists.'}), 409
 
-    # Trekker is auto-approved; Staff requires admin approval
-    is_approved = True if role == 'user' else False
+    # Only Admin is pre-approved in the system.
+    # No user is auto-approved upon registration; Staff strictly requires Admin approval.
+    is_approved = False
 
     user = User(
         name=name,

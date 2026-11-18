@@ -79,13 +79,18 @@
                 </td>
                 <td class="small">{{ u.phone || 'N/A' }}</td>
                 <td>
-                  <span v-if="u.role === 'staff'">
-                    <span v-if="u.is_approved" class="badge bg-success">Approved</span>
-                    <button v-else class="btn btn-xs btn-outline-success py-0 px-2 small" @click="approveStaff(u.id)">
-                      <i class="bi bi-check-circle me-1"></i>Approve
+                  <span v-if="u.role === 'admin'">
+                    <span class="badge bg-dark"><i class="bi bi-shield-check me-1"></i>Pre-Approved</span>
+                  </span>
+                  <span v-else-if="u.role === 'staff'">
+                    <span v-if="u.is_approved" class="badge bg-success"><i class="bi bi-check2-circle me-1"></i>Approved</span>
+                    <button v-else class="btn btn-sm btn-outline-success py-0 px-2 fw-semibold" @click="approveStaff(u.id)">
+                      <i class="bi bi-check-lg me-1"></i>Approve
                     </button>
                   </span>
-                  <span v-else class="text-muted small">Auto-Approved</span>
+                  <span v-else class="badge bg-light text-secondary border">
+                    Trekker (N/A)
+                  </span>
                 </td>
                 <td>
                   <span :class="u.is_active ? 'badge bg-success' : 'badge bg-danger'">
