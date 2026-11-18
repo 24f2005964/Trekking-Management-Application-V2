@@ -180,174 +180,140 @@
     <!-- TAB 2: TREK REMINDERS & AUTOMATED SCHEDULE DISPATCHER -->
     <!-- ============================================================= -->
     <div v-show="activeTab === 'reminders'">
-      <!-- Sleek Action & Connectivity Status Card -->
-      <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white p-3">
-        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+      <!-- Unified Trek Reminder Dispatcher & Schedule Controls -->
+      <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white overflow-hidden">
+        <!-- Header & Action Row -->
+        <div class="p-3 px-md-4 border-bottom bg-light-subtle d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
           <div>
             <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-              <h5 class="fw-bold text-dark mb-0">Trek Reminder Dispatcher</h5>
+              <h5 class="fw-bold text-dark mb-0 d-flex align-items-center">
+                <i class="bi bi-broadcast text-primary me-2"></i>Trek Reminder Dispatcher
+              </h5>
               <span class="badge" :class="reminderConfig.is_active ? 'bg-success-subtle text-success border border-success' : 'bg-secondary-subtle text-secondary border'">
-                <i class="bi bi-circle-fill me-1 small"></i>{{ reminderConfig.is_active ? 'Scheduler Active' : 'Scheduler Paused' }}
+                <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>{{ reminderConfig.is_active ? 'Scheduler Active' : 'Scheduler Paused' }}
               </span>
               <span class="badge" :class="reminderConfig.smtp_enabled && reminderConfig.smtp_user ? 'bg-success-subtle text-success border border-success' : 'bg-primary-subtle text-primary border border-primary'">
                 <i class="bi bi-envelope-check me-1"></i>{{ reminderConfig.smtp_enabled && reminderConfig.smtp_user ? 'Gmail SMTP Live' : 'Email Archive Active' }}
               </span>
             </div>
             <p class="text-muted small mb-0">
-              Trigger instant notifications or configure automated daily email reminders for booked trekkers.
+              Trigger instant notifications or configure automated daily departure alerts for booked trekkers.
             </p>
           </div>
 
-          <div class="d-flex gap-2 flex-shrink-0">
+          <!-- Quick Action Buttons -->
+          <div class="d-flex align-items-center gap-2 flex-wrap flex-shrink-0">
             <button
-              class="btn btn-primary rounded-pill px-3 py-2 small shadow-sm d-flex align-items-center"
+              class="btn btn-primary rounded-pill px-3 py-2 small shadow-sm d-flex align-items-center gap-2"
               @click="sendRemindersNow"
               :disabled="sendingNow"
             >
-              <span v-if="sendingNow" class="spinner-border spinner-border-sm me-2"></span>
-              <i v-else class="bi bi-lightning-charge-fill me-1 text-warning"></i>
-              <span>{{ sendingNow ? 'Dispatching...' : 'Dispatch Reminders Now' }}</span>
+              <span v-if="sendingNow" class="spinner-border spinner-border-sm"></span>
+              <i v-else class="bi bi-lightning-charge-fill text-warning"></i>
+              <span class="fw-semibold">{{ sendingNow ? 'Dispatching...' : 'Dispatch Reminders Now' }}</span>
             </button>
             <button
-              class="btn btn-outline-success rounded-pill px-3 py-2 small d-flex align-items-center"
+              class="btn btn-outline-success rounded-pill px-3 py-2 small d-flex align-items-center gap-2"
               @click="openCustomModal"
             >
-              <i class="bi bi-megaphone me-1"></i>
-              <span>Compose Notice</span>
+              <i class="bi bi-megaphone"></i>
+              <span class="fw-semibold">Compose Notice</span>
             </button>
           </div>
         </div>
-      </div>
 
-      <!-- Dispatch Delivery Status Feedback Alert -->
-      <div v-if="dispatchFeedback" class="alert alert-light border shadow-sm p-3 mb-4 rounded-3">
-        <div class="d-flex justify-content-between align-items-start mb-2">
-          <h6 class="fw-bold text-dark mb-0">
-            <i class="bi bi-broadcast text-primary me-2"></i>Latest Dispatch Delivery Report
-          </h6>
-          <button type="button" class="btn-close btn-sm" @click="dispatchFeedback = null"></button>
-        </div>
-        <div class="row g-2 small mt-1">
-          <div class="col-md-6">
-            <div class="p-2 border rounded bg-white">
-              <div class="text-muted">In-App & Email Server Archive:</div>
-              <div class="fw-bold text-success"><i class="bi bi-check-circle me-1"></i>Saved for {{ dispatchFeedback.recipients || dispatchFeedback.reminders_sent }} user(s)</div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="p-2 border rounded bg-white">
-              <div class="text-muted">Real External Email (Gmail SMTP):</div>
-              <div :class="dispatchFeedback.smtp_configured ? 'text-success fw-bold' : 'text-primary fw-bold'">
-                <i :class="dispatchFeedback.smtp_configured ? 'bi bi-check-circle me-1' : 'bi bi-info-circle me-1'"></i>
-                {{ dispatchFeedback.smtp_status }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Configuration Panel: Schedule & Integrations -->
-      <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
-        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-          <div>
-            <h6 class="fw-bold text-dark mb-0">
-              <i class="bi bi-sliders me-2 text-primary"></i>Delivery & Automated Schedule Settings
-            </h6>
-            <span class="text-muted small">Configure auto-dispatch timing and external communication channels</span>
-          </div>
-          <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" @click="saveReminderConfig" :disabled="savingConfig">
-            <span v-if="savingConfig" class="spinner-border spinner-border-sm me-1"></span>
-            <i v-else class="bi bi-check2 me-1"></i>Save Settings
-          </button>
-        </div>
-        <div class="card-body p-4">
+        <!-- Schedule & Delivery Settings Form -->
+        <div class="p-3 px-md-4">
           <form @submit.prevent="saveReminderConfig">
-            <div class="row g-4">
-              <!-- Left Column: Automated Daily Schedule Card -->
-              <div class="col-lg-6">
-                <div class="border rounded-3 p-3 bg-light-subtle h-100 shadow-none">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="fw-bold text-dark mb-0 d-flex align-items-center">
-                      <i class="bi bi-clock-history text-primary me-2"></i>Daily Automated Scheduler
-                    </h6>
-                    <div class="form-check form-switch mb-0">
-                      <input class="form-check-input" type="checkbox" id="schedulerSwitch" v-model="reminderConfig.is_active" />
-                      <label class="form-check-label small fw-semibold ms-1" for="schedulerSwitch">
-                        {{ reminderConfig.is_active ? 'Active' : 'Paused' }}
-                      </label>
-                    </div>
-                  </div>
-                  <p class="text-muted small mb-3">
-                    Background worker checks booked trekkers every morning and delivers personalized departure instructions.
-                  </p>
-
-                  <div class="row g-3">
-                    <div class="col-6">
-                      <label class="form-label small fw-semibold text-secondary mb-1">Trigger Time</label>
-                      <input type="time" class="form-control form-control-sm bg-white" v-model="reminderConfig.scheduled_time" required />
-                    </div>
-                    <div class="col-6">
-                      <label class="form-label small fw-semibold text-secondary mb-1">Departure Window</label>
-                      <select class="form-select form-select-sm bg-white" v-model.number="reminderConfig.days_before">
-                        <option :value="1">1 Day Prior</option>
-                        <option :value="2">2 Days Prior (Standard)</option>
-                        <option :value="3">3 Days Prior</option>
-                        <option :value="5">5 Days Prior</option>
-                      </select>
-                    </div>
-                    <div class="col-12">
-                      <label class="form-label small fw-semibold text-secondary mb-1">Default Channel</label>
-                      <select class="form-select form-select-sm bg-white" v-model="reminderConfig.channel">
-                        <option value="Email">Email (Gmail SMTP & In-App Server Archive)</option>
-                        <option value="SMS">SMS / Text Notification Log</option>
-                      </select>
-                    </div>
-                  </div>
+            <div class="row g-3 align-items-end">
+              <!-- Scheduler Active Toggle -->
+              <div class="col-sm-6 col-lg-3">
+                <label class="form-label small fw-semibold text-secondary mb-1">Daily Automated Scheduler</label>
+                <div class="form-check form-switch p-2 bg-light rounded-3 border d-flex align-items-center justify-content-between ps-3 pe-3 mb-0">
+                  <label class="form-check-label small fw-semibold text-dark mb-0" for="schedulerSwitch" style="cursor: pointer;">
+                    <i class="bi bi-clock-history text-primary me-1"></i>{{ reminderConfig.is_active ? 'Active' : 'Paused' }}
+                  </label>
+                  <input class="form-check-input ms-2" type="checkbox" id="schedulerSwitch" v-model="reminderConfig.is_active" />
                 </div>
               </div>
 
-              <!-- Right Column: Email Delivery Configuration Card -->
-              <div class="col-lg-6">
-                <div class="border rounded-3 p-3 bg-light-subtle h-100 shadow-none">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="fw-bold text-dark mb-0 d-flex align-items-center">
-                      <i class="bi bi-envelope-at text-primary me-2"></i>Email Delivery Configuration
-                    </h6>
-                    <div class="form-check form-switch mb-0">
-                      <input class="form-check-input" type="checkbox" id="smtpSwitch" v-model="reminderConfig.smtp_enabled" />
-                      <label class="form-check-label small fw-semibold ms-1" for="smtpSwitch">
-                        {{ reminderConfig.smtp_enabled ? 'Live SMTP' : 'Email Archive Only' }}
-                      </label>
-                    </div>
-                  </div>
-                  <p class="text-muted small mb-3">
-                    Deliver emails directly to genuine Gmail inboxes via SMTP, or save to the built-in server archive.
-                  </p>
+              <!-- Trigger Time -->
+              <div class="col-sm-6 col-lg-2">
+                <label class="form-label small fw-semibold text-secondary mb-1">Trigger Time</label>
+                <input type="time" class="form-control form-control-sm" v-model="reminderConfig.scheduled_time" required />
+              </div>
 
-                  <div v-if="reminderConfig.smtp_enabled" class="row g-2 small">
-                    <div class="col-7">
-                      <label class="form-label mb-1 text-secondary fw-semibold">Sender Account (Gmail)</label>
-                      <input type="email" class="form-control form-control-sm bg-white" v-model="reminderConfig.smtp_user" placeholder="your-email@gmail.com" />
-                    </div>
-                    <div class="col-5">
-                      <label class="form-label mb-1 text-secondary fw-semibold">App Password</label>
-                      <input type="password" class="form-control form-control-sm bg-white" v-model="reminderConfig.smtp_pass" :placeholder="reminderConfig.has_smtp_password ? '•••••••• (Saved)' : '16-char code'" />
-                    </div>
-                    <div class="col-12 mt-2">
-                      <label class="form-label mb-1 text-secondary fw-semibold">Test Live Email Delivery</label>
-                      <div class="input-group input-group-sm">
-                        <input type="email" class="form-control bg-white" v-model="testEmailRecipient" placeholder="Recipient email address..." />
-                        <button class="btn btn-outline-primary" type="button" @click="sendTestLiveEmail" :disabled="testingEmail || !testEmailRecipient">
-                          <span v-if="testingEmail" class="spinner-border spinner-border-sm me-1"></span>
-                          <i v-else class="bi bi-send me-1"></i>Send Test
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div v-else class="p-3 bg-white border rounded text-muted small mt-2">
-                    <i class="bi bi-info-circle me-1 text-primary"></i>
-                    Reminders are safely archived to the local server archive and user notification center. Toggle <strong>Live SMTP</strong> above to deliver directly to real Gmail inboxes.
-                  </div>
+              <!-- Departure Window -->
+              <div class="col-sm-6 col-lg-2">
+                <label class="form-label small fw-semibold text-secondary mb-1">Departure Window</label>
+                <select class="form-select form-select-sm" v-model.number="reminderConfig.days_before">
+                  <option :value="1">1 Day Prior</option>
+                  <option :value="2">2 Days Prior (Standard)</option>
+                  <option :value="3">3 Days Prior</option>
+                  <option :value="5">5 Days Prior</option>
+                </select>
+              </div>
+
+              <!-- Delivery Channel -->
+              <div class="col-sm-6 col-lg-3">
+                <label class="form-label small fw-semibold text-secondary mb-1">Delivery Channel</label>
+                <select class="form-select form-select-sm" v-model="reminderConfig.channel">
+                  <option value="Email">Email (Gmail SMTP & In-App Server Archive)</option>
+                  <option value="SMS">SMS / Text Notification Log</option>
+                </select>
+              </div>
+
+              <!-- Save Settings Button -->
+              <div class="col-12 col-lg-2">
+                <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill w-100 py-2 fw-semibold d-flex align-items-center justify-content-center" :disabled="savingConfig">
+                  <span v-if="savingConfig" class="spinner-border spinner-border-sm me-1"></span>
+                  <i v-else class="bi bi-check2 me-1"></i>Save Settings
+                </button>
+              </div>
+            </div>
+
+            <!-- Email Delivery Configuration Bar -->
+            <div class="mt-3 pt-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
+              <div class="d-flex align-items-center gap-3">
+                <div class="form-check form-switch mb-0">
+                  <input class="form-check-input" type="checkbox" id="smtpSwitch" v-model="reminderConfig.smtp_enabled" />
+                  <label class="form-check-label small fw-semibold text-dark" for="smtpSwitch" style="cursor: pointer;">
+                    Live Gmail SMTP Delivery
+                  </label>
+                </div>
+                <span class="small text-muted d-none d-sm-inline">
+                  {{ reminderConfig.smtp_enabled ? 'Delivering directly to recipient Gmail inboxes.' : 'Reminders are archived to server archive & trekker inbox.' }}
+                </span>
+              </div>
+
+              <button
+                v-if="reminderConfig.smtp_enabled"
+                type="button"
+                class="btn btn-sm btn-link text-decoration-none p-0 text-primary small fw-semibold"
+                @click="showSmtpFields = !showSmtpFields"
+              >
+                <i :class="showSmtpFields ? 'bi bi-chevron-up' : 'bi bi-chevron-down'" class="me-1"></i>{{ showSmtpFields ? 'Hide SMTP Credentials' : 'Configure SMTP Credentials' }}
+              </button>
+            </div>
+
+            <!-- Expandable SMTP Credentials Card -->
+            <div v-if="reminderConfig.smtp_enabled && showSmtpFields" class="row g-2 mt-2 p-3 bg-light rounded-3 border small">
+              <div class="col-md-4">
+                <label class="form-label mb-1 text-secondary fw-semibold">Gmail Sender Account</label>
+                <input type="email" class="form-control form-control-sm bg-white" v-model="reminderConfig.smtp_user" placeholder="your-email@gmail.com" />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label mb-1 text-secondary fw-semibold">App Password</label>
+                <input type="password" class="form-control form-control-sm bg-white" v-model="reminderConfig.smtp_pass" :placeholder="reminderConfig.has_smtp_password ? '•••••••• (Saved)' : '16-char code'" />
+              </div>
+              <div class="col-md-5">
+                <label class="form-label mb-1 text-secondary fw-semibold">Test Live Delivery</label>
+                <div class="input-group input-group-sm">
+                  <input type="email" class="form-control bg-white" v-model="testEmailRecipient" placeholder="Recipient email address..." />
+                  <button class="btn btn-outline-primary" type="button" @click="sendTestLiveEmail" :disabled="testingEmail || !testEmailRecipient">
+                    <span v-if="testingEmail" class="spinner-border spinner-border-sm me-1"></span>
+                    <i v-else class="bi bi-send me-1"></i>Send Test
+                  </button>
                 </div>
               </div>
             </div>
@@ -442,13 +408,13 @@
                 </tbody>
               </table>
             </div>
-            <div v-else class="text-center py-5 px-3">
-              <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle mb-3" style="width: 52px; height: 52px;">
-                <i class="bi bi-clock-history fs-3"></i>
+            <div v-else class="text-center py-4 px-3">
+              <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle mb-2" style="width: 44px; height: 44px;">
+                <i class="bi bi-clock-history fs-4"></i>
               </div>
               <h6 class="fw-bold text-dark mb-1">No Dispatch History Recorded</h6>
-              <p class="text-muted small mb-3">All scheduled and manual email reminder events will be logged here with timestamps and recipient counts.</p>
-              <button class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" @click="sendRemindersNow" :disabled="sendingNow">
+              <p class="text-muted small mb-3">All scheduled and manual trek reminder events will be logged here with timestamps and recipient counts.</p>
+              <button class="btn btn-sm btn-primary rounded-pill px-4 shadow-sm" @click="sendRemindersNow" :disabled="sendingNow">
                 <span v-if="sendingNow" class="spinner-border spinner-border-sm me-1"></span>
                 <i v-else class="bi bi-lightning-charge me-1"></i>Dispatch Reminders Now
               </button>
@@ -672,6 +638,7 @@ const reminderConfig = ref({
 })
 const notificationLogs = ref([])
 const allTreks = ref([])
+const showSmtpFields = ref(false)
 const savingConfig = ref(false)
 const sendingNow = ref(false)
 const sendingCustom = ref(false)
